@@ -4,7 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Elanco – Parasite Risk Map (Prototype)</title>
-  <link rel="stylesheet" href="./styles/main.css" />
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="./styles/main.css" />
+  
 </head>
 <body>
   <header class="topbar">
@@ -68,14 +72,12 @@
     </aside>
 
     <section class="map-area">
-      <!-- Replace this placeholder with <div id="map"></div> when Leaflet is working -->
-      <div class="map-placeholder">
-        <div class="map-placeholder-inner">
-          <div class="map-title">Interactive map</div>
-          <div class="map-subtitle">Map will be here</div>
-        </div>
+      <div id="map"></div>
       </div>
     </section>
   </main>
 </body>
 </html>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="./scripts/app.js"></script>
+
