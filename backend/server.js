@@ -1,93 +1,99 @@
 import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-// --- Rule-based fallback explanation (always works) ---
-function explainRiskFallback({ farmName, rainfall, temperature, risk }) {
-  const why = [];
-  if (rainfall >= 30) why.push("rainfall has been high");
-  else if (rainfall >= 15) why.push("rainfall has been moderate");
-  else why.push("rainfall has been low");
+// ----- Serve frontend from project root -----
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.join(__dirname, "..");
 
-  if (temperature >= 10 && temperature <= 20) why.push("temperatures are mild");
-  else if (temperature < 5) why.push("temperatures are low");
-  else if (temperature > 20) why.push("temperatures are warm");
-  else why.push("temperatures are cool");
+app.use(express.static(projectRoot));
 
-  return `Risk for ${farmName} is ${risk.toUpperCase()} because ${why.join(
-    " and "
-  )}. This indicator is based on simplified environmental thresholds (rainfall and temperature) and is intended to support discussion, not diagnose parasites or replace veterinary advice.`;
+app.get("/", (req, res) => {
+  res.sendFile(path.join(projectRoot, "index.html"));
+});
+
+// ----- Chat endpoint (Ollama) -----
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { message, context } = req.body || {};
+    if (!message) {
+      return res.json({ reply: "Please type a message.", action: { type: "none" } });
+    }
+
+    const selectedFarm = context?.selectedFarm || null;
+
+    const prompt = `
+You are the assistant for a UK parasite risk mapping prototype called GrazeSafe.
+
+Return ONLY valid JSON in this exact format:
+{
+  "reply": "string",
+  "action": { "type": "none|resetView|zoomTo", "value": any }
 }
 
-// POST /api/explain
-app.post("/api/explain", async (req, res) => {
-  const { farmName, rainfall, temperature, risk } = req.body || {};
-  if (!farmName || rainfall === undefined || temperature === undefined || !risk) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
+Rules:
+- Keep responses short (1–3 sentences).
+- Never claim medical certainty.
+- If user says "help", explain the available commands: reset view, zoom to leeds.
+- If user says "reset view" or "reset", return action.type="resetView".
+- If user says "zoom to leeds", return action.type="zoomTo" and value={"lat":53.8008,"lng":-1.5491,"zoom":11}.
+- Otherwise action.type="none".
 
-  // For Sprint 1: use fallback explanation (no external AI required)
-  const text = explainRiskFallback({ farmName, rainfall, temperature, risk });
-  return res.json({ explanation: text });
+Selected farm context:
+${selectedFarm ? JSON.stringify(selectedFarm) : "none"}
+
+User message:
+${message}
+`;
+
+    const ollamaRes = await fetch("http://localhost:11434/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama3.1:8b",
+        prompt,
+        stream: false
+      })
+    });
+
+    if (!ollamaRes.ok) {
+      return res.status(500).json({
+        reply: "Local AI is not responding. Make sure Ollama is running.",
+        action: { type: "none" }
+      });
+    }
+
+    const data = await ollamaRes.json();
+    const text = (data.response || "").trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      parsed = { reply: text || "Sorry, I couldn't process that.", action: { type: "none" } };
+    }
+
+    if (!parsed.action || !parsed.action.type) parsed.action = { type: "none" };
+    if (!parsed.reply) parsed.reply = "Okay.";
+
+    return res.json(parsed);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      reply: "Server error in /api/chat. Check backend console.",
+      action: { type: "none" }
+    });
+  }
 });
 
-// POST /api/chat  (simple command + FAQ bot for Sprint 1)
-app.post("/api/chat", async (req, res) => {
-  const { message } = req.body || {};
-  const msg = (message || "").toLowerCase();
-
-  // Simple intents (expand later)
-  if (msg.includes("help")) {
-    return res.json({
-      reply:
-        "Try: 'show high risk only', 'show all', 'reset view', 'zoom to leeds', or ask 'what does high mean?'",
-      action: { type: "none" },
-    });
-  }
-
-  if (msg.includes("high risk only") || msg.includes("show high")) {
-    return res.json({
-      reply: "Showing only HIGH risk farms.",
-      action: { type: "filterRisk", value: "high" },
-    });
-  }
-
-  if (msg.includes("show all")) {
-    return res.json({
-      reply: "Showing all farms.",
-      action: { type: "filterRisk", value: "all" },
-    });
-  }
-
-  if (msg.includes("reset")) {
-    return res.json({
-      reply: "Resetting map view to the UK.",
-      action: { type: "resetView" },
-    });
-  }
-
-  if (msg.includes("zoom to leeds")) {
-    return res.json({
-      reply: "Zooming to Leeds.",
-      action: { type: "zoomTo", value: { lat: 53.8008, lng: -1.5491, zoom: 11 } },
-    });
-  }
-
-  if (msg.includes("what does high mean") || msg.includes("what is high")) {
-    return res.json({
-      reply:
-        "High risk means conditions are more favourable for parasite larvae survival (typically wetter and mild temperatures). It’s an indicator, not confirmation of parasites.",
-      action: { type: "none" },
-    });
-  }
-
-  return res.json({
-    reply:
-      "I can help with map actions and quick explanations. Type 'help' to see commands.",
-    action: { type: "none" },
-  });
+// ----- Start server -----
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running: http://localhost:${PORT}`);
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API running on port ${PORT}`));
