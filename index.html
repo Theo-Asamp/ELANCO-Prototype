@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elanco – Parasite Risk Map (Prototype)</title>
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="./styles/main.css" />
+  
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <img src = "images/logo.png" alt = "elanco logo">
+      </div>
+      <div>
+    
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <span class="badge">Login</span>
+      <span class="note">This is just a prototype</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <div class="panel-section">
+        <h2>Find a location</h2>
+        <input id="search" class="input" type="text" placeholder="Search by farm name or ID (mock)" />
+        <p class="hint">In the prototype, search can match mock data fields.</p>
+      </div>
+
+      <div class="panel-section">
+        <h2>Compare Locations</h2>
+        <button id="compare-btn" class="button">Start Comparison</button>
+        <p class="hint" id="compare-hint">Click to compare weather between two locations</p>
+      </div>
+
+      <div class="panel-section">
+        <h2>Filters</h2>
+        <div class="filters">
+          <label><input type="checkbox" checked /> Low</label>
+          <label><input type="checkbox" checked /> Medium</label>
+          <label><input type="checkbox" checked /> High</label>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>Legend</h2>
+        <div class="legend">
+          <div><span class="swatch low"></span> Low risk</div>
+          <div><span class="swatch medium"></span> Medium risk</div>
+          <div><span class="swatch high"></span> High risk</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h2>How risk is calculated</h2>
+        <p class="small">
+          Risk is based on simple rule thresholds using environmental indicators (e.g. rainfall and temperature).
+          The goal is transparency and discussion, not prediction.
+        </p>
+      </div>
+
+      <div class="panel-section panel-footer">
+        <h2>Data & limitations</h2>
+        <ul class="small list">
+          <li>Environmental data may be incomplete or delayed.</li>
+          <li>Risk indicates favourable conditions, not confirmed parasite presence.</li>
+          <li>This tool does not replace veterinary advice.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="map-area">
+      <div id="map"></div>
+
+      <!-- Farm details side panel overlaying the map -->
+      <div id="right-panel" class="details-panel hidden">
+        <div class="panel-header">
+          <h2 id="panel-title">Select a farm</h2>
+          <button id="close-panel" class="close-btn" aria-label="Close details">&times;</button>
+        </div>
+        <div class="panel-content">
+          <p><strong>Owner:</strong> <span id="panel-owner">—</span></p>
+          <p><strong>Risk level:</strong> <span id="panel-risk">—</span></p>
+          <hr />
+          <div id="panel-weather" class="small">
+            Click a farm marker to load recent weather for this location.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="./scripts/app.js"></script>
+

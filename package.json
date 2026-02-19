@@ -1,0 +1,13 @@
+{
+  "name": "GrazeSafe",
+  "version": "1.0.0",
+  "description": "Pasture & Parasite Risk Mapping Prototype",
+  "scripts": {
+    "start": "node server.js",
+    "serve": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
