@@ -279,6 +279,142 @@ body {
   color: var(--text);
 }
 
+.chatbot {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  width: 340px;
+  max-width: calc(100vw - 36px);
+  background: #ffffff;
+  border: 1px solid rgba(11, 31, 53, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(11, 31, 53, 0.18);
+  overflow: hidden;
+  z-index: 9999; /* above Leaflet panes */
+}
+
+/* Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #003a70; /* Elanco-like navy */
+  color: #ffffff;
+}
+
+.chat-header strong {
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.chat-toggle {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #ffffff;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.chat-toggle:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* Body */
+.chat-body {
+  max-height: 280px;
+  overflow: auto;
+  padding: 12px;
+  background: #f6f9fc; /* soft light */
+}
+
+/* Messages */
+.msg {
+  padding: 9px 10px;
+  border-radius: 12px;
+  margin: 8px 0;
+  line-height: 1.35;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.msg.user {
+  background: rgba(0, 114, 206, 0.14); /* Elanco blue tint */
+  margin-left: 36px;
+  border: 1px solid rgba(0, 114, 206, 0.18);
+}
+
+.msg.bot {
+  background: #ffffff;
+  margin-right: 36px;
+  border: 1px solid rgba(11, 31, 53, 0.10);
+}
+
+/* Input area */
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(11, 31, 53, 0.10);
+  background: #ffffff;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(11, 31, 53, 0.16);
+  outline: none;
+  font-size: 13px;
+}
+
+.chat-input input:focus {
+  border-color: rgba(0, 114, 206, 0.45);
+  box-shadow: 0 0 0 4px rgba(0, 114, 206, 0.10);
+}
+
+.chat-input button {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  background: #0072ce;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.chat-input button:hover {
+  background: #005fa3;
+}
+
+/* Optional: collapsed state helper (if you toggle classes) */
+.chatbot.is-collapsed .chat-body,
+.chatbot.is-collapsed .chat-input {
+  display: none;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .chatbot {
+    width: 92vw;
+    left: 4vw;
+    bottom: 12px;
+  }
+  .chat-body {
+    max-height: 240px;
+  }
+}
+
+
 #panel-risk.low { color: var(--low); font-weight: bold; }
 #panel-risk.medium { color: var(--med); font-weight: bold; }
 #panel-risk.high { color: var(--high); font-weight: bold; }
