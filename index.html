@@ -8,7 +8,7 @@
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="./styles/main.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
 </head>
 <body>
   <header class="topbar">
@@ -31,10 +31,7 @@
     <aside class="panel">
       <div class="panel-section">
         <h2>Find a location</h2>
-        <div class="search-container">
-          <input id="search" class="input" type="text" placeholder="Search by farm name or ID (mock)" autocomplete="off" />
-          <ul id="search-results" class="search-results hidden"></ul>
-        </div>
+        <input id="search" class="input" type="text" placeholder="Search by farm name or ID (mock)" />
         <p class="hint">In the prototype, search can match mock data fields.</p>
       </div>
 
@@ -46,10 +43,10 @@
 
       <div class="panel-section">
         <h2>Filters</h2>
-        <div class="filters" id="risk-filters">
-          <label><input type="checkbox" value="low" checked /> Low</label>
-          <label><input type="checkbox" value="medium" checked /> Medium</label>
-          <label><input type="checkbox" value="high" checked /> High</label>
+        <div class="filters">
+          <label><input type="checkbox" checked /> Low</label>
+          <label><input type="checkbox" checked /> Medium</label>
+          <label><input type="checkbox" checked /> High</label>
         </div>
       </div>
 
@@ -114,101 +111,6 @@
     </form>
   </div>
 </body>
-<footer class="elanco-footer">
-
-    <div class="footer-top">
-  
-      <div class="footer-columns">
-  
-        <div class="footer-column">
-          <h4>Our Company</h4>
-          <ul>
-            <li>About Us</li>
-            <li>Contact Us</li>
-            <li>Suppliers</li>
-            <li>Terms and Conditions of Sale</li>
-            <li>Brand Protection</li>
-          </ul>
-        </div>
-  
-        <div class="footer-column">
-          <h4>What's Happening</h4>
-          <ul>
-            <li>Newsroom</li>
-            <li>Press Releases</li>
-            <li>Featured Articles</li>
-          </ul>
-        </div>
-  
-        <div class="footer-column">
-          <h4>Join Elanco</h4>
-          <ul>
-            <li>Search Jobs</li>
-            <li>Careers</li>
-            <li>Benefits</li>
-            <li>Students and Graduates</li>
-          </ul>
-        </div>
-  
-        <div class="footer-column">
-          <h4>Investor Relations</h4>
-          <ul>
-            <li>Investor Overview</li>
-            <li>Stock Information</li>
-            <li>Financial Filings</li>
-            <li>Investor Resources</li>
-            <li>Investor Events</li>
-            <li>Governance</li>
-          </ul>
-        </div>
-  
-      </div>
-  
-      <div class="footer-about">
-        <h4>About Elanco</h4>
-        <p>
-          At Elanco, we are united by a genuine love and care for animals.
-          Our purpose – making life better for animals, makes life better –
-          fuels us to break boundaries and inspire us to push further,
-          transforming animal care for healthier animals and a healthier,
-          more sustainable world.
-        </p>
-      </div>
-  
-    </div>
-
-    <div class="footer-social">
-
-        <h4>Connect with Elanco</h4>
-      
-        <div class="social-icons">
-            <a href="#" class="social-circle"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="social-circle"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-circle"><i class="fab fa-linkedin-in"></i></a>
-        </div>
-          
-      
-      </div>
-  
-    <div class="footer-bottom">
-      <div class="footer-links">
-        <a href="#">Privacy Statement</a>
-        <a href="#">Terms of Use</a>
-        <a href="#">Retailer Policy</a>
-        <a href="#">Satisfaction Guarantee</a>
-        <a href="#">Sitemap</a>
-        <a href="#">Safety Data Sheets</a>
-        <a href="#">Do Not Sell My Personal Information</a>
-        <a href="#">Cookie Preferences</a>
-      </div>
-  
-      <div class="footer-copy">
-        © 2025 Elanco or its affiliates.
-      </div>
-    </div>
-  
-  </footer>
-  
 </html>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="./scripts/app.js"></script>
