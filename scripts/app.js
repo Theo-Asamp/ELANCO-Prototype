@@ -7,12 +7,13 @@ import {
   isComparisonModeActive,
 } from "./compare.js";
 import { initComparisonUI } from "./compareUI.js";
+import { initChatbot } from "./chatbot.js";
 import { mockFarms } from "./data.js";
 import { getOpenMeteoTemperatureAndRainfall } from "./api.js";
 import { computeRiskLevel } from "./utils.js";
 
 // Initialize the application
-const map = initMap();
+const { map, resetView, zoomTo } = initMap();
 
 const panel = document.getElementById("right-panel");
 const closeBtn = document.getElementById("close-panel");
@@ -212,3 +213,15 @@ initComparisonUI(map);
 window.startComparison = () => startComparison(map);
 window.stopComparison = stopComparison;
 window.isComparisonModeActive = isComparisonModeActive;
+
+// Initialize chatbot
+initChatbot({
+  getContext: () => ({
+    selectedFarm: null
+  }),
+  onAction: (action) => {
+    if (action.type === "resetView") resetView();
+    if (action.type === "zoomTo" && action.value) zoomTo(action.value);
+    console.log("Chat action:", action);
+  }
+});

@@ -97,8 +97,20 @@
       </div>
     </section>
   </main>
+  <div class="chatbot" id="chatbot">
+    <div class="chat-header">
+      <strong>AI Assistant</strong>
+      <button id="chatToggle" class="chat-toggle">–</button>
+    </div>
+
+    <div class="chat-body" id="chatBody"></div>
+
+    <form class="chat-input" id="chatForm">
+      <input id="chatText" type="text" placeholder="Type 'help'…" autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
 </body>
 </html>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="./scripts/app.js"></script>
-
