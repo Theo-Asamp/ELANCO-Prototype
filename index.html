@@ -4,21 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Elanco – Parasite Risk Map (Prototype)</title>
+
   <link
+<<<<<<< HEAD
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <link rel="stylesheet" href="./styles/main.css" />
+=======
   rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="./styles/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+>>>>>>> 8395a3ff424ee24868ae82511d3bacf5284ef04b
 </head>
+
 <body>
   <header class="topbar">
     <div class="topbar-left">
       <div class="logo">
-        <img src = "images/logo.png" alt = "elanco logo">
+        <img src="images/logo.png" alt="elanco logo">
       </div>
-      <div>
-    
-      </div>
+
+      <nav class="top-nav">
+        <a href="index.html" class="nav-link active">Risk Map</a>
+        <a href="parasites.html" class="nav-link">Parasites</a>
+      </nav>
     </div>
 
     <div class="topbar-right">
@@ -28,6 +39,8 @@
   </header>
 
   <main class="layout">
+
+   
     <aside class="panel">
       <div class="panel-section">
         <h2>Find a location</h2>
@@ -65,8 +78,9 @@
       <div class="panel-section">
         <h2>How risk is calculated</h2>
         <p class="small">
-          Risk is based on simple rule thresholds using environmental indicators (e.g. rainfall and temperature).
-          The goal is transparency and discussion, not prediction.
+          Risk is based on simple rule thresholds using environmental indicators
+          (e.g. rainfall and temperature). The goal is transparency and discussion,
+          not prediction.
         </p>
       </div>
 
@@ -80,26 +94,41 @@
       </div>
     </aside>
 
+    
     <section class="map-area">
       <div id="map"></div>
 
+<<<<<<< HEAD
+=======
       <!-- Farm details side panel overlaying the map -->
+>>>>>>> 8395a3ff424ee24868ae82511d3bacf5284ef04b
       <div id="right-panel" class="details-panel hidden">
         <div class="panel-header">
           <h2 id="panel-title">Select a farm</h2>
           <button id="close-panel" class="close-btn" aria-label="Close details">&times;</button>
         </div>
         <div class="panel-content">
+<<<<<<< HEAD
+          <p><strong>Owner:</strong> <span id="panel-owner">-</span></p>
+          <p><strong>Risk Level:</strong> <span id="panel-risk">-</span></p>
+=======
           <p><strong>Owner:</strong> <span id="panel-owner">—</span></p>
           <p><strong>Risk level:</strong> <span id="panel-risk">—</span></p>
           <hr />
           <div id="panel-weather" class="small">
             Click a farm marker to load recent weather for this location.
           </div>
+>>>>>>> 8395a3ff424ee24868ae82511d3bacf5284ef04b
         </div>
       </div>
     </section>
+
   </main>
+<<<<<<< HEAD
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="./scripts/app.js"></script>
+=======
   <div class="chatbot" id="chatbot">
     <div class="chat-header">
       <strong>AI Assistant</strong>
@@ -113,6 +142,7 @@
       <button type="submit">Send</button>
     </form>
   </div>
+>>>>>>> 8395a3ff424ee24868ae82511d3bacf5284ef04b
 </body>
 <footer class="elanco-footer">
 
@@ -210,5 +240,8 @@
   </footer>
   
 </html>
+<<<<<<< HEAD
+=======
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="./scripts/app.js"></script>
+>>>>>>> 8395a3ff424ee24868ae82511d3bacf5284ef04b
