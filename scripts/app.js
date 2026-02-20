@@ -15,7 +15,6 @@ import { computeRiskLevel } from "./utils.js";
 // Initialize the application
 const { map, resetView, zoomTo } = initMap();
 
-//elements for the side panel
 const panel = document.getElementById("right-panel");
 const closeBtn = document.getElementById("close-panel");
 const titleEl = document.getElementById("panel-title");
@@ -84,19 +83,11 @@ async function loadWeatherForFarm(farm) {
   }
 }
 
-//helper functions for side panel
 function openPanel(farm) {
   if (!panel) return;
 
   titleEl.textContent = farm.name;
-  ownerEl.textContent = farm.owner;
-  riskEl.textContent = farm.riskLevel.toUpperCase();
-  
-  //colour class for risk text
-  riskEl.className = ""; 
-  riskEl.classList.add(farm.riskLevel); 
-
-  //shows panel
+  ownerEl.textContent = farm.owner ?? "";
   panel.classList.remove("hidden");
 
    // Load weather details for this farm
@@ -112,32 +103,8 @@ if (closeBtn && panel) {
 function createFarmMarker(map, farm) {
   if (!farm?.location || farm.location.length !== 2) return null;
 
-//show panel
-const farmMarkers = [];
+  const marker = L.marker(farm.location).addTo(map);
 
-// loop through data.js and marks pins
-mockFarms.forEach(farm => {
-  
-  // pick the pin colour based on the risk level
-  let pinColor = "#0b5cab"; 
-  if (farm.riskLevel === "low") pinColor = "#1f9d55";
-  if (farm.riskLevel === "medium") pinColor = "#f0b429";
-  if (farm.riskLevel === "high") pinColor = "#d64545";
-
-  // draw a custom svg pin so we can use our colours
-  const customIcon = L.divIcon({
-    className: "custom-pin",
-    html: `
-      <svg width="28" height="42" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 0C5.373 0 0 5.373 0 12c0 8.25 12 24 12 24s12-15.75 12-24C24 5.373 18.627 0 12 0zm0 17.5c-3.038 0-5.5-2.462-5.5-5.5S8.962 6.5 12 6.5s5.5 2.462 5.5 5.5-2.462 5.5-5.5 5.5z" fill="${pinColor}"/>
-      </svg>`,
-    iconSize: [28, 42],
-    iconAnchor: [14, 42], 
-  });
-
-  const marker = L.marker(farm.location, { icon: customIcon }).addTo(map);
-
-  //when clicked open panel and zoom in
   marker.on("click", () => {
     // In comparison mode, marker clicks are used to select locations for comparison.
     if (isComparisonModeActive()) {
@@ -151,90 +118,110 @@ mockFarms.forEach(farm => {
     }
 
     openPanel(farm);
-    map.flyTo(farm.location, 14, { duration: 1.5 }); 
+    map.flyTo(farm.location, 10);
   });
 
-  //save marker and its risk in array
-  farmMarkers.push({
-    marker: marker,
-    riskLevel: farm.riskLevel
-  });
-});
-
-//filter logic
-const filterCheckboxes = document.querySelectorAll('#risk-filters input[type="checkbox"]');
-
-function updateFilters() {
-  const activeFilters = [];
-  filterCheckboxes.forEach(box => {
-    if (box.checked) {
-      activeFilters.push(box.value);
-    }
-  });
-
-  //loop all saved markers 
-  farmMarkers.forEach(item => {
-    if (activeFilters.includes(item.riskLevel)) {
-      if (!map.hasLayer(item.marker)) {
-        item.marker.addTo(map);
-      }
-    } else {
-      if (map.hasLayer(item.marker)) {
-        item.marker.remove();
-      }
-    }
-  });
+  return marker;
 }
 
-filterCheckboxes.forEach(box => {
-  box.addEventListener("change", updateFilters);
+// Existing mock farms (fallback / demo data)
+mockFarms.forEach((farm) => {
+  createFarmMarker(map, farm);
 });
 
-//search logic
-const searchInput = document.getElementById("search");
-const searchResults = document.getElementById("search-results");
+// --- CSV support: load additional farms from a CSV file and add markers ---
 
-searchInput.addEventListener("input", (e) => {
-  const query = e.target.value.toLowerCase().trim();
+function parseCsv(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
 
-  searchResults.innerHTML = "";
+  if (lines.length === 0) return [];
 
-  if (query.length === 0) {
-    searchResults.classList.add("hidden");
-    return;
-  }
+  const headers = lines[0]
+    .split(",")
+    .map((h) => h.trim().toLowerCase());
 
-  const matches = mockFarms.filter(farm => 
-    farm.name.toLowerCase().includes(query) || 
-    farm.id.toLowerCase().includes(query)
-  );
+  const rows = [];
 
-  // populate the dropdown
-  if (matches.length > 0) {
-    searchResults.classList.remove("hidden"); 
-    
-    matches.forEach(farm => {
-      const li = document.createElement("li");
-      li.textContent = `${farm.name} (${farm.id})`;
-      
-      // handle user clicking a search result
-      li.addEventListener("click", () => {
-        searchInput.value = farm.name;
-        searchResults.classList.add("hidden");
-        
-        openPanel(farm);
-        map.flyTo(farm.location, 14, { duration: 1.5 });
-      });
-      
-      searchResults.appendChild(li);
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(",");
+    if (values.length < 2) continue;
+
+    const row = {};
+    headers.forEach((h, idx) => {
+      row[h] = (values[idx] ?? "").trim();
     });
-  } else {
-    searchResults.classList.add("hidden"); 
+    rows.push(row);
   }
-});
 
-document.addEventListener("click", (e) => {
-  if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-    searchResults.classList.add("hidden");
+  return rows;
+}
+
+async function loadFarmsFromCsv(map, url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn("Could not load farms CSV:", url, response.status);
+      return;
+    }
+
+    const text = await response.text();
+    const rows = parseCsv(text);
+
+    rows.forEach((row, index) => {
+      // Try multiple common column names, case-insensitive
+      const latRaw = row.latitude || row.lat;
+      const lonRaw = row.longitude || row.lon || row.lng;
+
+      const latitude = parseFloat(latRaw);
+      const longitude = parseFloat(lonRaw);
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        return; // skip rows without valid coordinates
+      }
+
+      const farm = {
+        id: row.id || row.farm_id || `csv_${index}`,
+        name: row.name || row.farm_name || `Farm ${index + 1}`,
+        owner: row.owner || row.farmer || "",
+        location: [latitude, longitude],
+      };
+
+      createFarmMarker(map, farm);
+    });
+  } catch (error) {
+    console.error("Failed to load farms from CSV:", error);
+  }
+}
+
+// Change this path to where your CSV lives relative to index.html
+// Expected headers (case-insensitive): name, owner, latitude, longitude
+loadFarmsFromCsv(map, "./farms.csv");
+
+// Initialize comparison functionality first
+initComparisonHandler(map);
+
+// NOTE: We intentionally do not enable "click anywhere on the map to see weather".
+// Weather is loaded only when clicking on farm markers (pointers), and displayed in the side panel.
+
+// Initialize comparison UI
+initComparisonUI(map);
+
+// Expose comparison functions to window for easy access (still available via console)
+window.startComparison = () => startComparison(map);
+window.stopComparison = stopComparison;
+window.isComparisonModeActive = isComparisonModeActive;
+
+// Initialize chatbot
+initChatbot({
+  getContext: () => ({
+    selectedFarm: null
+  }),
+  onAction: (action) => {
+    if (action.type === "resetView") resetView();
+    if (action.type === "zoomTo" && action.value) zoomTo(action.value);
+    console.log("Chat action:", action);
   }
 });
