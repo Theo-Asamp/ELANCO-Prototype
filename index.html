@@ -4,19 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Elanco – Parasite Risk Map (Prototype)</title>
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <link rel="stylesheet" href="./styles/main.css" />
-  
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="./styles/main.css" />
 </head>
+
 <body>
   <header class="topbar">
     <div class="topbar-left">
       <div class="logo">
-        <img src = "images/logo.png" alt = "elanco logo">
+        <img src="images/logo.png" alt="elanco logo">
       </div>
     </div>
+
     <nav class="top-nav">
       <a href="index.html" class="nav-link active">Risk Map</a>
       <a href="parasites.html" class="nav-link">Parasites</a>
@@ -29,6 +29,8 @@
 
   <main class="layout">
     <aside class="panel">
+
+      <!-- SEARCH -->
       <div class="panel-section">
         <h2>Find a location</h2>
         <div class="search-container">
@@ -38,12 +40,7 @@
         <p class="hint">In the prototype, search can match mock data fields.</p>
       </div>
 
-      <div class="panel-section">
-        <h2>Compare Locations</h2>
-        <button id="compare-btn" class="button">Start Comparison</button>
-        <p class="hint" id="compare-hint">Click to compare weather between two locations</p>
-      </div>
-
+      <!-- FILTERS -->
       <div class="panel-section">
         <h2>Filters</h2>
         <div class="filters" id="risk-filters">
@@ -53,6 +50,7 @@
         </div>
       </div>
 
+      <!-- LEGEND -->
       <div class="panel-section">
         <h2>Legend</h2>
         <div class="legend">
@@ -62,6 +60,7 @@
         </div>
       </div>
 
+      <!-- INFO -->
       <div class="panel-section">
         <h2>How risk is calculated</h2>
         <p class="small">
@@ -70,6 +69,7 @@
         </p>
       </div>
 
+      <!-- LIMITATIONS -->
       <div class="panel-section panel-footer">
         <h2>Data & limitations</h2>
         <ul class="small list">
@@ -78,28 +78,46 @@
           <li>This tool does not replace veterinary advice.</li>
         </ul>
       </div>
+
     </aside>
 
+    <!-- MAP AREA -->
     <section class="map-area">
       <div id="map"></div>
 
-      <!-- Farm details side panel overlaying the map -->
+      <!-- RIGHT PANEL -->
       <div id="right-panel" class="details-panel hidden">
         <div class="panel-header">
           <h2 id="panel-title">Select a farm</h2>
           <button id="close-panel" class="close-btn" aria-label="Close details">&times;</button>
         </div>
+
         <div class="panel-content">
           <p><strong>Owner:</strong> <span id="panel-owner">—</span></p>
-          <p><strong>Risk level:</strong> <span id="panel-risk">—</span></p>
+
+          <p><strong>Risk level:</strong> 
+            <span id="panel-risk" class="badge">—</span>
+          </p>
+
           <hr />
+
           <div id="panel-weather" class="small">
             Click a farm marker to load recent weather for this location.
           </div>
+
+          <hr />
+
+          <div id="panel-why" class="small"></div>
+
+          <hr />
+
+          <div id="panel-mitigation" class="small"></div>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- CHATBOT -->
   <div class="chatbot" id="chatbot">
     <div class="chat-header">
       <strong>AI Assistant</strong>
@@ -113,7 +131,10 @@
       <button type="submit">Send</button>
     </form>
   </div>
+
 </body>
+
+<!-- FOOTER -->
 <footer class="elanco-footer">
 
   <div class="footer-top">
@@ -178,17 +199,13 @@
   </div>
 
   <div class="footer-social">
-
-      <h4>Connect with Elanco</h4>
-    
-      <div class="social-icons">
-          <a href="#" class="social-circle"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="social-circle"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="social-circle"><i class="fab fa-linkedin-in"></i></a>
-      </div>
-        
-    
+    <h4>Connect with Elanco</h4>
+    <div class="social-icons">
+      <a href="#" class="social-circle"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="social-circle"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-circle"><i class="fab fa-linkedin-in"></i></a>
     </div>
+  </div>
 
   <div class="footer-bottom">
     <div class="footer-links">
@@ -208,6 +225,7 @@
   </div>
 
 </footer>
-</html>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="./scripts/app.js"></script>
+</html>
