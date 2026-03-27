@@ -52,14 +52,13 @@ async function loadWeatherForFarm(farm) {
     const maxRain =
       rainfall.length > 0 ? Math.max(...rainfall) : null;
 
-    const parts = [];
-    parts.push(`<strong>Weather summary</strong>`);
-    parts.push(`Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-    if (elevation != null) parts.push(`Elevation: ${elevation} m`);
-    if (timezone) parts.push(`Timezone: ${timezone}`);
-    if (avgTemp != null) parts.push(`Average temperature: ${avgTemp.toFixed(1)} °C`);
-    if (totalRain != null) parts.push(`Total rainfall: ${totalRain.toFixed(1)} mm`);
-    if (maxRain != null) parts.push(`Max hourly rainfall: ${maxRain.toFixed(1)} mm`);
+    const weatherDetails = [];
+    weatherDetails.push(`Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+    if (elevation != null) weatherDetails.push(`Elevation: ${elevation} m`);
+    if (timezone) weatherDetails.push(`Timezone: ${timezone}`);
+    if (avgTemp != null) weatherDetails.push(`Average temperature: ${avgTemp.toFixed(1)} °C`);
+    if (totalRain != null) weatherDetails.push(`Total rainfall: ${totalRain.toFixed(1)} mm`);
+    if (maxRain != null) weatherDetails.push(`Max hourly rainfall: ${maxRain.toFixed(1)} mm`);
 
     // Compute risk
     if (avgTemp != null && totalRain != null && riskEl) {
@@ -71,8 +70,6 @@ async function loadWeatherForFarm(farm) {
       riskEl.className = "";
       riskEl.classList.add("badge");
       riskEl.classList.add(riskLevel);
-
-      parts.push(`Risk level: ${riskLevel.toUpperCase()}`);
 
       // WHY + MITIGATION UI
       if (whyEl && mitigationEl) {
@@ -91,8 +88,15 @@ async function loadWeatherForFarm(farm) {
         `;
       }
     }
-
-    weatherEl.innerHTML = parts.join("<br>");
+    weatherEl.innerHTML = `
+  <details class="weather-dropdown">
+    <summary>Weather summary</summary>
+    <div class="weather-dropdown-content">
+      ${weatherDetails.map(item => `<div>${item}</div>`).join("")}
+    </div>
+  </details>
+`;
+    
   } catch (error) {
     console.error("Error loading weather:", error);
     weatherEl.textContent = "Unable to load weather data.";

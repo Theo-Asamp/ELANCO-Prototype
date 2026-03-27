@@ -33,5 +33,51 @@ export const mockFarms = [
       owner: "Grŵp Llandrillo Menai",
       location: [53.0683, -4.3184], 
       riskLevel: "medium"
-    }
-  ];
+    },
+    {
+    id: "farm_006",
+    name: "High Fell Farm",
+    owner: "Private",
+    location: [54.4609, -3.0886], // Cumbria
+    riskLevel: "medium"
+  },
+  {
+    id: "farm_007",
+    name: "Glenview Farm",
+    owner: "Private",
+    location: [57.1497, -2.0943], // Aberdeenshire
+    riskLevel: "medium"
+  },
+  {
+    id: "farm_008",
+    name: "Riverdale Farm",
+    owner: "Private",
+    location: [50.7184, -3.5339], // Devon
+    riskLevel: "medium"
+  },
+  {
+    id: "farm_009",
+    name: "Moors Edge Farm",
+    owner: "Private",
+    location: [54.2777, -1.5230], // North Yorkshire
+    riskLevel: "medium"
+  },
+  {
+    id: "farm_010",
+    name: "Green Valley Farm",
+    owner: "Private",
+    location: [52.2736, -3.0050], // Powys
+    riskLevel: "medium"
+  },
+  {
+    id: "farm_011",
+    name: "Eastfield Farm",
+    owner: "Private",
+    location: [52.6309, 1.2974], // Norfolk
+    riskLevel: "medium"
+  }
+];
+
+
+
+
