@@ -20,37 +20,153 @@ const riskEl = document.getElementById("panel-risk");
 const weatherEl = document.getElementById("panel-weather");
 const whyEl = document.getElementById("panel-why");
 const mitigationEl = document.getElementById("panel-mitigation");
+const parasiteSelect = document.getElementById("parasite-select");
 
-// Track selected farm (for chatbot later)
+// Track selected farm
 let selectedFarm = null;
+
+// Default parasite
+let selectedParasite = parasiteSelect?.value || "roundworms";
+
+// =====================
+// Parasite content
+// =====================
+const parasiteInfo = {
+  roundworms: {
+    label: "Gastrointestinal Roundworms",
+    why:
+      "This risk level is influenced by recent rainfall and temperature conditions, which can support the survival and spread of gastrointestinal roundworm larvae on pasture.",
+    mitigation: [
+      "Rotate grazing areas",
+      "Monitor livestock regularly",
+      "Avoid overstocking pasture",
+      "Seek veterinary advice if risk increases",
+    ],
+  },
+  lungworms: {
+    label: "Lungworms",
+    why:
+      "This risk level is influenced by recent rainfall and temperature conditions, which can increase the survival and transmission of lungworm larvae in grazing environments.",
+    mitigation: [
+      "Monitor cattle for coughing or breathing changes",
+      "Rotate grazing areas",
+      "Reduce exposure to heavily grazed pasture",
+      "Seek veterinary advice if symptoms appear",
+    ],
+  },
+  flukes: {
+    label: "Liver Flukes",
+    why:
+      "This risk level is influenced by recent rainfall and temperature conditions, which can favour wet ground and support environments linked to liver fluke transmission.",
+    mitigation: [
+      "Avoid wet or poorly drained grazing areas",
+      "Monitor livestock regularly",
+      "Manage pasture and drainage where possible",
+      "Seek veterinary advice if risk increases",
+    ],
+  },
+  coccidia: {
+    label: "Coccidia",
+    why:
+      "This risk level is influenced by recent rainfall and temperature conditions, which may increase environmental contamination and support coccidia survival.",
+    mitigation: [
+      "Maintain pasture and housing hygiene",
+      "Avoid overcrowding",
+      "Monitor younger animals closely",
+      "Seek veterinary advice if risk increases",
+    ],
+  },
+  lice: {
+    label: "Lice",
+    why:
+      "This risk level is influenced by recent environmental conditions, which may affect stress, close contact, and parasite persistence within livestock groups.",
+    mitigation: [
+      "Inspect coats and skin regularly",
+      "Reduce close-contact spread where possible",
+      "Maintain good hygiene and animal condition",
+      "Seek veterinary advice if infestation is suspected",
+    ],
+  },
+};
 
 // =====================
 // Weather + Risk Logic
 // =====================
-async function loadWeatherForFarm(farm) {
-  if (!weatherEl || !farm?.location || farm.location.length !== 2) return;
+async function getFarmWeatherSummary(farm) {
+  if (!farm?.location || farm.location.length !== 2) {
+    return null;
+  }
 
   const [latitude, longitude] = farm.location;
+  const weather = await getOpenMeteoTemperatureAndRainfall(latitude, longitude);
+
+  const temperatures = weather.temperature_2m ?? [];
+  const rainfall = weather.precipitation ?? [];
+  const timezone = weather.timezone;
+  const elevation = weather.elevation;
+
+  const avgTemp =
+    temperatures.length > 0
+      ? temperatures.reduce((a, b) => a + b, 0) / temperatures.length
+      : null;
+
+  const totalRain =
+    rainfall.length > 0 ? rainfall.reduce((a, b) => a + b, 0) : null;
+
+  const maxRain = rainfall.length > 0 ? Math.max(...rainfall) : null;
+
+  return {
+    latitude,
+    longitude,
+    timezone,
+    elevation,
+    avgTemp,
+    totalRain,
+    maxRain,
+  };
+}
+
+function renderWhyAndMitigation(elevation = null) {
+  const info = parasiteInfo[selectedParasite] || parasiteInfo.roundworms;
+
+  if (whyEl) {
+    whyEl.innerHTML = `
+      <strong>Why this risk?</strong><br>
+      ${info.why}
+      ${elevation != null ? `<br>Elevation (${elevation} m) may also influence local parasite development.` : ""}
+    `;
+  }
+
+  if (mitigationEl) {
+    mitigationEl.innerHTML = `
+      <strong>How to mitigate</strong><br>
+      ${info.mitigation.map(item => `- ${item}`).join("<br>")}
+    `;
+  }
+}
+
+async function loadWeatherForFarm(farm) {
+  if (!weatherEl) return;
+
   weatherEl.textContent = "Loading weather data...";
 
   try {
-    const weather = await getOpenMeteoTemperatureAndRainfall(latitude, longitude);
+    const summary = await getFarmWeatherSummary(farm);
 
-    const temperatures = weather.temperature_2m ?? [];
-    const rainfall = weather.precipitation ?? [];
-    const timezone = weather.timezone;
-    const elevation = weather.elevation;
+    if (!summary) {
+      weatherEl.textContent = "Unable to load weather data.";
+      return;
+    }
 
-    const avgTemp =
-      temperatures.length > 0
-        ? temperatures.reduce((a, b) => a + b, 0) / temperatures.length
-        : null;
-
-    const totalRain =
-      rainfall.length > 0 ? rainfall.reduce((a, b) => a + b, 0) : null;
-
-    const maxRain =
-      rainfall.length > 0 ? Math.max(...rainfall) : null;
+    const {
+      latitude,
+      longitude,
+      timezone,
+      elevation,
+      avgTemp,
+      totalRain,
+      maxRain,
+    } = summary;
 
     const weatherDetails = [];
     weatherDetails.push(`Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
@@ -60,10 +176,8 @@ async function loadWeatherForFarm(farm) {
     if (totalRain != null) weatherDetails.push(`Total rainfall: ${totalRain.toFixed(1)} mm`);
     if (maxRain != null) weatherDetails.push(`Max hourly rainfall: ${maxRain.toFixed(1)} mm`);
 
-    // Compute risk
     if (avgTemp != null && totalRain != null && riskEl) {
       const riskLevel = computeRiskLevel(avgTemp, totalRain);
-
       farm.riskLevel = riskLevel;
 
       riskEl.textContent = riskLevel.toUpperCase();
@@ -71,35 +185,43 @@ async function loadWeatherForFarm(farm) {
       riskEl.classList.add("badge");
       riskEl.classList.add(riskLevel);
 
-      // WHY + MITIGATION UI
-      if (whyEl && mitigationEl) {
-        whyEl.innerHTML = `
-          <strong>Why this risk?</strong><br>
-          This risk level is influenced by recent rainfall and temperature conditions, which affect parasite survival and spread.
-          ${elevation ? `<br>Elevation (${elevation} m) may also impact parasite development.` : ""}
-        `;
-
-        mitigationEl.innerHTML = `
-          <strong>How to mitigate</strong><br>
-          - Rotate grazing areas<br>
-          - Monitor livestock regularly<br>
-          - Maintain pasture hygiene<br>
-          - Seek veterinary advice if risk increases
-        `;
-      }
+      renderWhyAndMitigation(elevation);
     }
+
     weatherEl.innerHTML = `
-  <details class="weather-dropdown">
-    <summary>Weather summary</summary>
-    <div class="weather-dropdown-content">
-      ${weatherDetails.map(item => `<div>${item}</div>`).join("")}
-    </div>
-  </details>
-`;
-    
+      <details class="weather-dropdown">
+        <summary>Weather summary</summary>
+        <div class="weather-dropdown-content">
+          ${weatherDetails.map(item => `<div>${item}</div>`).join("")}
+        </div>
+      </details>
+    `;
   } catch (error) {
     console.error("Error loading weather:", error);
     weatherEl.textContent = "Unable to load weather data.";
+  }
+}
+
+async function calculateRiskForFarm(farm) {
+  if (!farm?.location || farm.location.length !== 2) {
+    farm.riskLevel = "low";
+    return;
+  }
+
+  try {
+    const summary = await getFarmWeatherSummary(farm);
+
+    if (!summary || summary.avgTemp == null || summary.totalRain == null) {
+      farm.riskLevel = "low";
+      return;
+    }
+
+    // For now this is still the same generic calculator.
+    // The dropdown is wired up, but parasite-specific thresholds come next.
+    farm.riskLevel = computeRiskLevel(summary.avgTemp, summary.totalRain);
+  } catch (error) {
+    console.error(`Failed to calculate risk for ${farm.name}:`, error);
+    farm.riskLevel = "low";
   }
 }
 
@@ -155,10 +277,8 @@ function makeFarmIcon(riskLevel) {
 function createFarmMarker(map, farm) {
   if (!farm.location) return;
 
-  if (!farm.riskLevel) farm.riskLevel = "medium";
-
   const marker = L.marker(farm.location, {
-    icon: makeFarmIcon(farm.riskLevel),
+    icon: makeFarmIcon(farm.riskLevel || "low"),
   }).addTo(map);
 
   marker.bindTooltip(farm.name, {
@@ -166,7 +286,7 @@ function createFarmMarker(map, farm) {
     offset: [0, -36],
     opacity: 1,
     permanent: false,
-    className: "farm-hover-tooltip"
+    className: "farm-hover-tooltip",
   });
 
   marker.on("mouseover", () => {
@@ -186,8 +306,31 @@ function createFarmMarker(map, farm) {
   farmMarkers.push({ marker, farm });
 }
 
-// Load mock farms
-mockFarms.forEach(farm => createFarmMarker(map, farm));
+function clearFarmMarkers() {
+  farmMarkers.forEach(({ marker }) => {
+    if (map.hasLayer(marker)) {
+      map.removeLayer(marker);
+    }
+  });
+  farmMarkers.length = 0;
+}
+
+async function refreshFarmRisks() {
+  clearFarmMarkers();
+
+  await Promise.all(mockFarms.map(farm => calculateRiskForFarm(farm)));
+
+  mockFarms.forEach(farm => createFarmMarker(map, farm));
+  updateFilters();
+
+  if (selectedFarm) {
+    const updatedFarm = mockFarms.find(f => f.id === selectedFarm.id);
+    if (updatedFarm) {
+      selectedFarm = updatedFarm;
+      openPanel(updatedFarm);
+    }
+  }
+}
 
 // =====================
 // Filters
@@ -196,10 +339,12 @@ const filterCheckboxes = document.querySelectorAll('#risk-filters input');
 
 function updateFilters() {
   const active = [];
-  filterCheckboxes.forEach(box => box.checked && active.push(box.value));
+  filterCheckboxes.forEach(box => {
+    if (box.checked) active.push(box.value);
+  });
 
   farmMarkers.forEach(item => {
-    const risk = item.farm.riskLevel || "medium";
+    const risk = item.farm.riskLevel || "low";
 
     if (active.includes(risk)) {
       if (!map.hasLayer(item.marker)) item.marker.addTo(map);
@@ -212,6 +357,19 @@ function updateFilters() {
 filterCheckboxes.forEach(box => box.addEventListener("change", updateFilters));
 
 // =====================
+// Parasite selection
+// =====================
+parasiteSelect?.addEventListener("change", async (e) => {
+  selectedParasite = e.target.value;
+
+  if (selectedFarm) {
+    renderWhyAndMitigation();
+  }
+
+  await refreshFarmRisks();
+});
+
+// =====================
 // Search
 // =====================
 const searchInput = document.getElementById("search");
@@ -221,10 +379,13 @@ searchInput?.addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   searchResults.innerHTML = "";
 
-  if (!query) return searchResults.classList.add("hidden");
+  if (!query) {
+    searchResults.classList.add("hidden");
+    return;
+  }
 
-  const matches = mockFarms.filter(f =>
-    f.name.toLowerCase().includes(query)
+  const matches = mockFarms.filter(farm =>
+    farm.name.toLowerCase().includes(query)
   );
 
   matches.forEach(farm => {
@@ -245,12 +406,22 @@ searchInput?.addEventListener("input", (e) => {
 });
 
 // =====================
+// Initial load
+// =====================
+refreshFarmRisks();
+
+// =====================
 // Chatbot
 // =====================
 initChatbot({
-  getContext: () => ({ selectedFarm }),
+  getContext: () => ({
+    selectedFarm,
+    selectedParasite,
+    selectedParasiteLabel:
+      parasiteInfo[selectedParasite]?.label || "Gastrointestinal Roundworms",
+  }),
   onAction: (action) => {
     if (action.type === "resetView") resetView();
     if (action.type === "zoomTo" && action.value) zoomTo(action.value);
-  }
+  },
 });
