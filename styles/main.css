@@ -159,7 +159,7 @@ body {
   box-shadow: var(--shadow);
   position: relative;
   z-index: 1;
-  
+
 }
 
 /* ================= SIDE PANEL ================= */
@@ -289,6 +289,82 @@ body {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .details-panel { width: 90%; right: 5%; }
+
+  .layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .map-area {
+    height: 60vh;
+  }
+
+  #map {
+    height: 100%;
+  }
+
+  .panel-section {
+    padding: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: column;
+    height: auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .nav-link {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+
+  .logo img {
+    width: 50px;
+  }
+  .details-panel {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .details-panel.show {
+    transform: translateY(0);
+  }
+  .chatbot {
+    width: calc(100% - 20px);
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .chat-body {
+    max-height: 200px;
+  }
+  .search-results {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .input,
+  .button,
+  .chat-input input,
+  .chat-input button {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .button {
+    border-radius: 12px;
+  }
 }
