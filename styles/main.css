@@ -15,11 +15,18 @@
   --high: #d64545;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -33,7 +40,7 @@ body {
   padding: 16px 22px;
   background: var(--surface);
   border-bottom: 4px solid var(--primary);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .logo img {
@@ -108,7 +115,7 @@ body {
 
 .input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(11,92,171,0.1);
+  box-shadow: 0 0 0 3px rgba(11, 92, 171, 0.1);
 }
 
 /* ================= BUTTON ================= */
@@ -143,9 +150,15 @@ body {
   border-radius: 50%;
 }
 
-.swatch.low { background: var(--low); }
-.swatch.medium { background: var(--med); }
-.swatch.high { background: var(--high); }
+.swatch.low {
+  background: var(--low);
+}
+.swatch.medium {
+  background: var(--med);
+}
+.swatch.high {
+  background: var(--high);
+}
 
 /* ================= MAP ================= */
 .map-area {
@@ -159,7 +172,6 @@ body {
   box-shadow: var(--shadow);
   position: relative;
   z-index: 1;
-
 }
 
 /* ================= SIDE PANEL ================= */
@@ -175,7 +187,6 @@ body {
 
   z-index: 9999; /* 🔥 IMPORTANT */
 }
-
 
 .details-panel.hidden {
   transform: translateX(120%);
@@ -253,7 +264,7 @@ body {
 }
 
 .msg.user {
-  background: rgba(11,92,171,0.15);
+  background: rgba(11, 92, 171, 0.15);
 }
 
 .msg.bot {
@@ -283,13 +294,54 @@ body {
 }
 
 /* ================= RISK COLORS ================= */
-#panel-risk.low { color: var(--low); font-weight: bold; }
-#panel-risk.medium { color: var(--med); font-weight: bold; }
-#panel-risk.high { color: var(--high); font-weight: bold; }
+#panel-risk.low {
+  color: var(--low);
+  font-weight: bold;
+}
+#panel-risk.medium {
+  color: var(--med);
+  font-weight: bold;
+}
+#panel-risk.high {
+  color: var(--high);
+  font-weight: bold;
+}
+
+/* ================= MAP CONTROLS ================= */
+.leaflet-home-control a.leaflet-home-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+  background: #fff;
+}
+
+.leaflet-home-control a.leaflet-home-button:hover {
+  background: #f4f4f4;
+}
+
+.farm-hover-tooltip {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  color: #1b2b44;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+.leaflet-tooltip.farm-hover-tooltip::before {
+  border-top-color: #ffffff;
+}
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
-
   .layout {
     grid-template-columns: 1fr;
     height: auto;
@@ -313,6 +365,7 @@ body {
     padding: 12px;
   }
 }
+
 @media (max-width: 600px) {
   .topbar {
     flex-direction: column;
@@ -329,6 +382,7 @@ body {
   .logo img {
     width: 50px;
   }
+
   .details-panel {
     position: fixed;
     bottom: 0;
@@ -343,6 +397,7 @@ body {
   .details-panel.show {
     transform: translateY(0);
   }
+
   .chatbot {
     width: calc(100% - 20px);
     left: 10px;
@@ -352,10 +407,12 @@ body {
   .chat-body {
     max-height: 200px;
   }
+
   .search-results {
     max-height: 200px;
     overflow-y: auto;
   }
+
   .input,
   .button,
   .chat-input input,
@@ -367,4 +424,82 @@ body {
   .button {
     border-radius: 12px;
   }
+}
+/* ================= HOME BUTTON ENHANCED ================= */
+
+.leaflet-home-control {
+  margin-top: 8px;
+}
+
+.leaflet-home-control a.leaflet-home-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: var(--primary);
+  background: var(--surface);
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+
+  box-shadow: var(--shadow);
+
+  transition: all 0.2s ease;
+}
+
+/* hover effect */
+.leaflet-home-control a.leaflet-home-button:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* active click feel */
+.leaflet-home-control a.leaflet-home-button:active {
+  transform: scale(0.95);
+}
+
+/* optional: subtle focus outline */
+.leaflet-home-control a.leaflet-home-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(11, 92, 171, 0.2);
+}
+/* FORCE STYLE ALL LEAFLET CONTROL BUTTONS (including home) */
+
+.leaflet-control a {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px !important;
+  height: 34px !important;
+
+  font-size: 18px !important;
+  font-weight: 700;
+
+  color: var(--primary) !important;
+  background: var(--surface) !important;
+
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+
+  box-shadow: var(--shadow) !important;
+
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-control a:hover {
+  background: var(--primary) !important;
+  color: white !important;
+  transform: translateY(-1px);
+}
+
+.leaflet-control a:active {
+  transform: scale(0.95);
 }

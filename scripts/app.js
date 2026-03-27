@@ -161,6 +161,22 @@ function createFarmMarker(map, farm) {
     icon: makeFarmIcon(farm.riskLevel),
   }).addTo(map);
 
+  marker.bindTooltip(farm.name, {
+    direction: "top",
+    offset: [0, -36],
+    opacity: 1,
+    permanent: false,
+    className: "farm-hover-tooltip"
+  });
+
+  marker.on("mouseover", () => {
+    marker.openTooltip();
+  });
+
+  marker.on("mouseout", () => {
+    marker.closeTooltip();
+  });
+
   marker.on("click", () => {
     selectedFarm = farm;
     openPanel(farm);
