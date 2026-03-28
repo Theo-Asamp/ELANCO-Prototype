@@ -4,6 +4,11 @@ import { mockFarms } from "./data.js";
 import { getOpenMeteoTemperatureAndRainfall } from "./api.js";
 import { computeRiskLevel } from "./utils.js";
 
+// Merge any farms imported via the Import / Export page
+const _customFarms = JSON.parse(localStorage.getItem("elanco_custom_farms") || "[]");
+_customFarms.forEach(f => mockFarms.push(f));
+
+
 // =====================
 // Init Map
 // =====================
@@ -322,6 +327,11 @@ async function refreshFarmRisks() {
 
   mockFarms.forEach(farm => createFarmMarker(map, farm));
   updateFilters();
+
+  // Persist live-computed risk levels so the export page stays in sync
+  const riskCache = {};
+  mockFarms.forEach(f => { riskCache[f.id] = f.riskLevel; });
+  localStorage.setItem("elanco_risk_cache", JSON.stringify(riskCache));
 
   if (selectedFarm) {
     const updatedFarm = mockFarms.find(f => f.id === selectedFarm.id);
