@@ -2,12 +2,16 @@
   "name": "GrazeSafe",
   "version": "1.0.0",
   "description": "Pasture & Parasite Risk Mapping Prototype",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
-    "serve": "node server.js"
+    "serve": "node server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
 }
-
